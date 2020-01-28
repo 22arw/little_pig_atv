@@ -72,17 +72,39 @@
         </link>
 
         <!-- The Joint -->
-        <joint name="${prefix}_ackerman_link_joint" type="revolute">
+        <joint name="base_link_${prefix}_ackerman_link" type="revolute">
             <axis xyz="0.0 0.0 1.0" rpy="0.0 0.0 0.0"/>
             <parent link="base_link"/>
             <child link="${prefix}_ackerman_link"/>
             <origin xyz="${length / 2.5} ${((ackerman_joint_width/2) + (width/2)) * reflect} -${(height / 2.25) + (ackerman_joint_diameter / 2)}" rpy="0.0 0.0 0.0"/>
-            <limit lower="-0.5" upper="0.5" effort="0.0" velocity="0.0"/>
+            <limit lower="-0.5" upper="0.5" effort="1.0" velocity="0.1"/>
         </joint>
+
+        <!-- Gazebo Interface -->
+        <gazebo reference="${prefix}_ackerman_link">
+            <mu1 value="200.0"/>
+            <mu2 value="100.0"/>
+            <kp value="10000000.0" />
+            <kd value="1.0" />
+            <material>Gazebo/Blue</material>
+        </gazebo>
+
+        <!-- The Transmission -->
+        <transmission name="base_link_${prefix}_ackerman_link_trans">
+            <type>transmission_interface/SimpleTransmission</type>
+            <joint name="base_link_${prefix}_ackerman_link">
+                <hardwareInterface>EffortJointInterface</hardwareInterface>
+            </joint>
+            <actuator name="base_link_${prefix}_ackerman_link_motor">
+                <hardwareInterface>EffortJointInterface</hardwareInterface>
+                <mechanicalReduction>1</mechanicalReduction>
+            </actuator>
+        </transmission>
+
     </xacro:macro>
 
     <!-- Front Wheel Macro -->
-    <xacro:macro name="front_wheel" params="suffix reflect">
+    <xacro:macro name="front_wheel" params="prefix suffix reflect">
 
         <!-- The Link -->
         <link name="front_${suffix}_wheel">
@@ -107,9 +129,9 @@
         </link>
 
         <!-- The Joint -->
-        <joint name="ackerman_steering_to_front_${suffix}_wheel" type="continuous">
-            <axis xyz="0.0 0.1 0.0"/>
-            <parent link="${suffix}_ackerman_link"/>
+        <joint name="${prefix}_ackerman_link_front_${suffix}_wheel" type="continuous">
+            <axis xyz="0.0 1.0 0.0"/>
+            <parent link="${prefix}_ackerman_link"/>
             <child link="front_${suffix}_wheel"/>
             <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
         </joint>
@@ -124,12 +146,12 @@
         </gazebo>
 
         <!-- The Transmission -->
-        <transmission name="front_${suffix}_wheel_trans">
+        <transmission name="${prefix}_ackerman_link_front_${suffix}_wheel_trans">
             <type>transmission_interface/SimpleTransmission</type>
-            <joint name="ackerman_steering_to_front_${suffix}_wheel">
+            <joint name="${prefix}_ackerman_link_front_${suffix}_wheel">
                 <hardwareInterface>EffortJointInterface</hardwareInterface>
             </joint>
-            <actuator name="front_${suffix}_wheel_motor">
+            <actuator name="${prefix}_ackerman_link_front_${suffix}_wheel_motor">
                 <hardwareInterface>EffortJointInterface</hardwareInterface>
                 <mechanicalReduction>1</mechanicalReduction>
             </actuator>
@@ -177,8 +199,8 @@
     <xacro:ackerman_steering prefix="right" reflect="-1" />
 
     <!-- Call the front wheels in left/right -->
-    <xacro:front_wheel suffix="left" reflect="1" />
-    <xacro:front_wheel suffix="right" reflect="-1" />
+    <xacro:front_wheel prefix="left" suffix="left" reflect="1" />
+    <xacro:front_wheel prefix="right" suffix="right" reflect="-1" />
 
     <!-- Call the rear wheels in left/right-->
     <xacro:rear_wheel suffix="left" reflect="1" />
