@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>little_pig_description</name>
+  <version>0.0.0</version>
+  <description>The little_pig_description package</description>
+
+  <maintainer email="clayton.allen.us@gmail.com">Clayton Allen</maintainer>
+
+  <license>BSD</license>
+
+  <url type="repository">https://github.com/22arw/little_pig_atv</url>
+
+  <author email="clayton.allen.us@gmail.com">Clayton Allen</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <exec_depend>joint_state_publisher</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>rviz</exec_depend>
+
+  <export>
+  </export>
+</package>

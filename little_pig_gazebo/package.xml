@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>little_pig_gazebo</name>
+  <version>0.1.0</version>
+  <description>little_pig_gazebo</description>
+  <maintainer email="clayton.allen.us@gmail.com">Clayton Allen</maintainer>
+
+  <license>BSD</license>
+
+  <url type="repository">https://github.com/22arw/little_pig_atv</url>
+
+  <author email="clayton.allen.us@gmail.com">Clayton Allen</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <exec_depend>gazebo_plugins</exec_depend>
+  <exec_depend>gazebo_ros</exec_depend>
+  <exec_depend>gazebo_ros_control</exec_depend>
+  <exec_depend>rrbot_control</exec_depend>
+  <exec_depend>rrbot_description</exec_depend>
+  <exec_depend>xacro</exec_depend>
+
+  <export>
+  </export>
+</package>

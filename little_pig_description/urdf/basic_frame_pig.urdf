@@ -1,0 +1,472 @@
+<?xml version="1.0"?>
+<robot name="basic_frame_pig">
+
+    <!-- Base Link / Tube Chasis-->
+    <link name="base_link">
+        <inertial>
+            <origin rpy="0 0 0" xyz="-0.005632841369081588 0.2917022138225285 -0.004107516953549188"/>
+            <mass value="61.719091558990335"/>
+            <inertia ixx="23.451972" ixy="-0.091403" ixz="-0.110297" iyy="6.432858" iyz="1.415813" izz="26.484945"/>
+        </inertial>
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="package://little_pig_atv/urdf/bin_stl/base_link_m-binary.stl"/>
+            </geometry>
+            <material name="silver">
+                <color rgba="1 0 0 1"/>
+            </material>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="package://little_pig_atv/urdf/bin_stl/base_link_m-binary.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- Left Steering Knuckle -->
+    <link name="left_steering_knuckle">
+        <inertial>
+            <origin rpy="0 0 0" xyz="0.04626374762862234 0.005213062909487198 0.06475119586205944"/>
+            <mass value="2.3221244569381487"/>
+            <inertia ixx="0.004736" ixy="0.000171" ixz="6.1e-05" iyy="0.003675" iyz="6e-06" izz="0.003101"/>
+        </inertial>
+        <visual>
+            <origin rpy="0 0 0" xyz="-0.447222 0.622377 0.163596"/>
+            <geometry>
+                <mesh filename="package://little_pig_atv/urdf/bin_stl/left_steering_knuckle_m-binary.stl"/>
+            </geometry>
+            <material name="silver">
+                <color rgba="1 0 0 1"/>
+            </material>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="-0.447222 0.622377 0.163596"/>
+            <geometry>
+                <mesh filename="package://little_pig_atv/urdf/bin_stl/left_steering_knuckle_m-binary.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- Base Link - Left Steering Knuckle Joint -->
+    <joint name="base_link_to_left_steering_knuckle" type="revolute">
+        <origin rpy="0 0 0" xyz="0.447222 -0.622377 -0.163596"/>
+        <parent link="base_link"/>
+        <child link="left_steering_knuckle"/>
+        <axis xyz="-0.000375 -0.0 0.009993"/>
+        <limit lower="-0.5" upper="0.5" effort="1.0" velocity="1.0"/>
+    </joint>
+
+    <!-- Base Link - Left Steering Knuckle Transmission -->
+    <transmission name="base_link_to_left_steering_knuckle_transmission">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="base_link_to_left_steering_knuckle">
+            <hardwareInterface>PositionJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="base_link_to_left_steering_knuckle_actr">
+            <hardwareInterface>PositionJointInterface</hardwareInterface>
+            <mechanicalReduction>1</mechanicalReduction>
+        </actuator>
+    </transmission>
+
+    <!-- Front Left Wheel Hub -->
+    <link name="front_left_wheel_hub">
+        <inertial>
+            <origin rpy="0 0 0" xyz="0.027160820485626624 1.743857634961543e-07 0.0010195880848413164"/>
+            <mass value="1.118795265201953"/>
+            <inertia ixx="0.001287" ixy="-0.0" ixz="1.1e-05" iyy="0.000986" iyz="0.0" izz="0.000987"/>
+        </inertial>
+        <visual>
+            <origin rpy="0 0 0" xyz="-0.526843 0.622377 0.097593"/>
+            <geometry>
+                <mesh filename="package://little_pig_atv/urdf/bin_stl/front_left_wheel_hub_m-binary.stl"/>
+            </geometry>
+            <material name="silver">
+                <color rgba="1 0 0 1"/>
+            </material>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="-0.526843 0.622377 0.097593"/>
+            <geometry>
+                <mesh filename="package://little_pig_atv/urdf/bin_stl/front_left_wheel_hub_m-binary.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- Front Left Steering Knuckle to Front Left Wheel Hub Joint -->
+    <joint name="front_left_steering_knuckle_front_left_wheel_hub" type="continuous">
+        <origin rpy="0 0 0" xyz="0.079621 0.0 0.066003"/>
+        <parent link="left_steering_knuckle"/>
+        <child link="front_left_wheel_hub"/>
+        <axis xyz="-0.009993 -0.0 -0.000375"/>
+    </joint>
+
+    <!-- Front Left Steering Knuckle to Front Left Wheel Hub Transmission -->
+    <transmission name="front_left_steering_knuckle_front_left_wheel_hub_transmission">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="front_left_steering_knuckle_front_left_wheel_hub">
+            <hardwareInterface>EffortJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="front_left_steering_knuckle_front_left_wheel_hub_actr">
+            <hardwareInterface>EffortJointInterface</hardwareInterface>
+            <mechanicalReduction>1</mechanicalReduction>
+        </actuator>
+    </transmission>
+
+    <!-- Front Left Wheel -->
+    <link name="front_left_wheel">
+        <inertial>
+            <origin rpy="0 0 0" xyz="0.0011488911139707625 2.510309293879409e-06 3.8079092190917985e-05"/>
+            <mass value="77.98350831979032"/>
+            <inertia ixx="4.69787" ixy="-9e-06" ixz="0.077554" iyy="2.63247" iyz="-3e-05" izz="2.635399"/>
+        </inertial>
+        <visual>
+            <origin rpy="0 0 0" xyz="-0.563887 0.622377 0.096202"/>
+            <geometry>
+                <mesh filename="package://little_pig_atv/urdf/bin_stl/front_left_wheel_m-binary.stl"/>
+            </geometry>
+            <material name="silver">
+                <color rgba="1 0 0 1"/>
+            </material>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="-0.563887 0.622377 0.096202"/>
+            <geometry>
+                <mesh filename="package://little_pig_atv/urdf/bin_stl/front_left_wheel_m-binary.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- Front Left Wheel Hub to Front Left Wheel Joint-->
+    <joint name="front_left_wheel_hub_front_left_wheel" type="fixed">
+        <origin rpy="0 0 0" xyz="0.037044 0.0 0.001391"/>
+        <parent link="front_left_wheel_hub"/>
+        <child link="front_left_wheel"/>
+    </joint>
+
+    <!-- Front Left Wheel Hub to Front Left Wheel Joint-->
+    <transmission name="front_left_wheel_hub_front_left_wheel_transmission">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="front_left_wheel_hub_front_left_wheel">
+            <hardwareInterface>PositionJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="front_left_wheel_hub_front_left_wheel_actr">
+            <hardwareInterface>PositionJointInterface</hardwareInterface>
+            <mechanicalReduction>1</mechanicalReduction>
+        </actuator>
+    </transmission>
+
+    <!-- Right Steering Knuckle -->
+    <link name="right_steering_knuckle">
+        <inertial>
+            <origin rpy="0 0 0" xyz="-0.04602703865184993 0.00521305901325253 0.06491864444227143"/>
+            <mass value="2.322126893861874"/>
+            <inertia ixx="0.004736" ixy="-0.000171" ixz="-6.7e-05" iyy="0.003675" iyz="7e-06" izz="0.003102"/>
+        </inertial>
+        <visual>
+            <origin rpy="0 0 0" xyz="0.457954 0.622377 0.162568"/>
+            <geometry>
+                <mesh filename="package://little_pig_atv/urdf/bin_stl/right_steering_knuckle_m-binary.stl"/>
+            </geometry>
+            <material name="silver">
+                <color rgba="1 0 0 1"/>
+            </material>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0.457954 0.622377 0.162568"/>
+            <geometry>
+                <mesh filename="package://little_pig_atv/urdf/bin_stl/right_steering_knuckle_m-binary.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- Base Link - Right Steering Knuckle Joint -->
+    <joint name="base_link_to_right_steering_knuckle" type="revolute">
+        <origin rpy="0 0 0" xyz="-0.457954 -0.622377 -0.162568"/>
+        <parent link="base_link"/>
+        <child link="right_steering_knuckle"/>
+        <axis xyz="0.000412 -0.0 0.009992"/>
+        <limit lower="-0.5" upper="0.5" effort="1.0" velocity="1.0"/>
+    </joint>
+
+    <!-- Base Link - Right Steering Knuckle Transmission -->
+    <transmission name="base_link_to_right_steering_knuckle_transmission">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="base_link_to_right_steering_knuckle">
+            <hardwareInterface>PositionJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="base_link_to_right_steering_knuckle_actr">
+            <hardwareInterface>PositionJointInterface</hardwareInterface>
+            <mechanicalReduction>1</mechanicalReduction>
+        </actuator>
+    </transmission>
+
+    <!-- Front Right Wheel Hub -->
+    <link name="front_right_wheel_hub">
+        <inertial>
+            <origin rpy="0 0 0" xyz="-0.03807755669639501 2.229040352297318e-07 0.0015684173363760129"/>
+            <mass value="1.1187951842239643"/>
+            <inertia ixx="0.001286" ixy="0.0" ixz="-1.2e-05" iyy="0.000986" iyz="-0.0" izz="0.000987"/>
+        </inertial>
+        <visual>
+            <origin rpy="0 0 0" xyz="0.526428 0.622377 0.096724"/>
+            <geometry>
+                <mesh filename="package://little_pig_atv/urdf/bin_stl/front_right_wheel_hub_m-binary.stl"/>
+            </geometry>
+            <material name="silver">
+                <color rgba="1 0 0 1"/>
+            </material>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0.526428 0.622377 0.096724"/>
+            <geometry>
+                <mesh filename="package://little_pig_atv/urdf/bin_stl/front_right_wheel_hub_m-binary.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- Right Steering Knuckle - Front Right Wheel Hub Joint -->
+    <joint name="right_steering_knuckle_front_right_hub" type="continuous">
+        <origin rpy="0 0 0" xyz="-0.068474 0.0 0.065844"/>
+        <parent link="right_steering_knuckle"/>
+        <child link="front_right_wheel_hub"/>
+        <axis xyz="0.009992 0.0 -0.000412"/>
+    </joint>
+
+    <!-- Right Steering Knuckle - Front Right Wheel Hub Transmission -->
+    <transmission name="right_steering_knuckle_front_right_hub_transmission">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="right_steering_knuckle_front_right_hub">
+            <hardwareInterface>PositionJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="right_steering_knuckle_front_right_hub_actr">
+            <hardwareInterface>PositionJointInterface</hardwareInterface>
+            <mechanicalReduction>1</mechanicalReduction>
+        </actuator>
+    </transmission>
+
+    <!-- Front Right Wheel -->
+    <link name="front_right_wheel">
+        <inertial>
+            <origin rpy="0 0 0" xyz="-0.001292276290758898 2.291232137796584e-06 5.7530997634336334e-05"/>
+            <mass value="77.98348447888712"/>
+            <inertia ixx="4.697279" ixy="1.1e-05" ixz="-0.085043" iyy="2.632396" iyz="2.9e-05" izz="2.635914"/>
+        </inertial>
+        <visual>
+            <origin rpy="0 0 0" xyz="0.574387 0.622377 0.094748"/>
+            <geometry>
+                <mesh filename="package://little_pig_atv/urdf/bin_stl/front_right_wheel_m-binary.stl"/>
+            </geometry>
+            <material name="silver">
+                <color rgba="1 0 0 1"/>
+            </material>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0.574387 0.622377 0.094748"/>
+            <geometry>
+                <mesh filename="package://little_pig_atv/urdf/bin_stl/front_right_wheel_m-binary.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- Front Right Wheel Hub to Front Right Wheel Joint -->
+    <joint name="front_right_wheel_hub_front_right_wheel" type="fixed">
+        <origin rpy="0 0 0" xyz="-0.047959 0.0 0.001976"/>
+        <parent link="front_right_wheel_hub"/>
+        <child link="front_right_wheel"/>
+    </joint>
+
+    <!-- Front Right Wheel Hub to Front Right Wheel Transmission -->
+    <transmission name="front_right_wheel_hub_front_right_wheel_transmission">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="front_right_wheel_hub_front_right_wheel">
+            <hardwareInterface>PositionJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="front_right_wheel_hub_front_right_wheel_actr">
+            <hardwareInterface>PositionJointInterface</hardwareInterface>
+            <mechanicalReduction>1</mechanicalReduction>
+        </actuator>
+    </transmission>
+
+    <!-- Rear Left Wheel Hub -->
+    <link name="rear_left_hub">
+        <inertial>
+            <origin rpy="0 0 0" xyz="0.027291669153874487 1.9676759810405287e-07 -0.0001474093893083922"/>
+            <mass value="1.1187963911881649"/>
+            <inertia ixx="0.001287" ixy="0.0" ixz="-2e-06" iyy="0.000986" iyz="0.0" izz="0.000986"/>
+        </inertial>
+        <visual>
+            <origin rpy="0 0 0" xyz="-0.547664 -0.788123 0.102833"/>
+            <geometry>
+                <mesh filename="package://little_pig_atv/urdf/bin_stl/rear_left_hub_m-binary.stl"/>
+            </geometry>
+            <material name="silver">
+                <color rgba="1 0 0 1"/>
+            </material>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="-0.547664 -0.788123 0.102833"/>
+            <geometry>
+                <mesh filename="package://little_pig_atv/urdf/bin_stl/rear_left_hub_m-binary.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- Base Link to Rear Left Wheel Hub Joint -->
+    <joint name="base_link_rear_left_wheel_hub" type="continuous">
+        <origin rpy="0 0 0" xyz="0.547664 0.788123 -0.102833"/>
+        <parent link="base_link"/>
+        <child link="rear_left_hub"/>
+        <axis xyz="0.01 -0.0 -5.4e-05"/>
+    </joint>
+
+    <!-- Base Link to Rear Left Wheel Hub Transmission -->
+    <transmission name="base_link_rear_left_wheel_hub_transmission">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="base_link_rear_left_wheel_hub">
+            <hardwareInterface>PositionJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="base_link_rear_left_wheel_hub_actr">
+            <hardwareInterface>PositionJointInterface</hardwareInterface>
+            <mechanicalReduction>1</mechanicalReduction>
+        </actuator>
+    </transmission>
+
+    <!-- Rear Left Wheel -->
+    <link name="rear_left_wheel">
+        <inertial>
+            <origin rpy="0 0 0" xyz="-0.024998897547842458 3.7973710019789664e-06 0.0001368244068725294"/>
+            <mass value="88.28370410127773"/>
+            <inertia ixx="5.402188" ixy="-3e-05" ixz="-0.011694" iyy="3.237533" iyz="2.6e-05" izz="3.237567"/>
+        </inertial>
+        <visual>
+            <origin rpy="0 0 0" xyz="-0.584846 -0.788123 0.103034"/>
+            <geometry>
+                <mesh filename="package://little_pig_atv/urdf/bin_stl/rear_left_wheel_m-binary.stl"/>
+            </geometry>
+            <material name="silver">
+                <color rgba="1 0 0 1"/>
+            </material>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="-0.584846 -0.788123 0.103034"/>
+            <geometry>
+                <mesh filename="package://little_pig_atv/urdf/bin_stl/rear_left_wheel_m-binary.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- Rear Left Wheel Hub to Rear Left Wheel Joint -->
+    <joint name="rear_left_wheel_hub_rear_left_wheel" type="fixed">
+        <origin rpy="0 0 0" xyz="0.037182 0.0 -0.000201"/>
+        <parent link="rear_left_hub"/>
+        <child link="rear_left_wheel"/>
+    </joint>
+
+    <!-- Rear Left Wheel Hub to Rear Left Wheel Transmission -->
+    <transmission name="rear_left_wheel_hub_rear_left_wheel_transmission">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="rear_left_wheel_hub_rear_left_wheel">
+            <hardwareInterface>PositionJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="rear_left_wheel_hub_rear_left_wheel_actr">
+            <hardwareInterface>PositionJointInterface</hardwareInterface>
+            <mechanicalReduction>1</mechanicalReduction>
+        </actuator>
+    </transmission>
+
+    <!-- Rear Right Wheel Hub -->
+    <link name="rear_right_hub">
+        <inertial>
+            <origin rpy="0 0 0" xyz="-0.027291096145922622 2.0521091637082378e-07 3.286601153970614e-05"/>
+            <mass value="1.1187959967121328"/>
+            <inertia ixx="0.001287" ixy="-0.0" ixz="-0.0" iyy="0.000986" iyz="-0.0" izz="0.000986"/>
+        </inertial>
+        <visual>
+            <origin rpy="0 0 0" xyz="0.547263 -0.788123 0.13233"/>
+            <geometry>
+                <mesh filename="package://little_pig_atv/urdf/bin_stl/rear_right_hub_m-binary.stl"/>
+            </geometry>
+            <material name="silver">
+                <color rgba="1 0 0 1"/>
+            </material>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0.547263 -0.788123 0.13233"/>
+            <geometry>
+                <mesh filename="package://little_pig_atv/urdf/bin_stl/rear_right_hub_m-binary.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- Base Link to Rear Right Wheel Hub Joint -->
+    <joint name="base_link_rear_right_wheel_hub" type="continuous">
+        <origin rpy="0 0 0" xyz="-0.547263 0.788123 -0.13233"/>
+        <parent link="base_link"/>
+        <child link="rear_right_hub"/>
+        <axis xyz="-0.01 0.0 1.2e-05"/>
+    </joint>
+
+    <!-- Base Link to Rear Right Wheel Hub Transmission -->
+    <transmission name="base_link_rear_right_wheel_hub_transmission">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="base_link_rear_right_wheel_hub">
+            <hardwareInterface>PositionJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="base_link_rear_right_wheel_hub_actr">
+            <hardwareInterface>PositionJointInterface</hardwareInterface>
+            <mechanicalReduction>1</mechanicalReduction>
+        </actuator>
+    </transmission>
+
+    <!-- Rear Right Wheel -->
+    <link name="rear_right_wheel">
+        <inertial>
+            <origin rpy="0 0 0" xyz="0.022815265177914767 2.0103108817615123e-06 -2.4107454217187074e-05"/>
+            <mass value="88.28370095669479"/>
+            <inertia ixx="5.402246" ixy="1.2e-05" ixz="-0.002585" iyy="3.234966" iyz="2.6e-05" izz="3.235"/>
+        </inertial>
+        <visual>
+            <origin rpy="0 0 0" xyz="0.584444 -0.788123 0.132285"/>
+            <geometry>
+                <mesh filename="package://little_pig_atv/urdf/bin_stl/rear_right_wheel_m-binary.stl"/>
+            </geometry>
+            <material name="silver">
+                <color rgba="1 0 0 1"/>
+            </material>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0.584444 -0.788123 0.132285"/>
+            <geometry>
+                <mesh filename="package://little_pig_atv/urdf/bin_stl/rear_right_wheel_m-binary.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- Rear Right Wheel Hub to Rear Right Wheel Joint -->
+    <joint name="rear_right_wheel_hub_rear_right_wheel" type="fixed">
+        <origin rpy="0 0 0" xyz="-0.037181 0.0 4.5e-05"/>
+        <parent link="rear_right_hub"/>
+        <child link="rear_right_wheel"/>
+    </joint>
+
+    <!-- Rear Right Wheel Hub to Rear Right Wheel Trainsmission -->
+    <transmission name="rear_right_wheel_hub_rear_right_wheel_transmission">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="rear_right_wheel_hub_rear_right_wheel">
+            <hardwareInterface>PositionJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="rear_right_wheel_hub_rear_right_wheel_actr">
+            <hardwareInterface>PositionJointInterface</hardwareInterface>
+            <mechanicalReduction>1</mechanicalReduction>
+        </actuator>
+    </transmission>
+
+    <!-- Gazebo plugin for ROS Control -->
+    <gazebo>
+        <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+            <robotNamespace>/</robotNamespace>
+        </plugin>
+    </gazebo>
+</robot>
