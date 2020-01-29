@@ -19,21 +19,13 @@
         </inertial>
     </xacro:macro>
 
-    <!-- axle eff limit = 2 * stall_torque 
-       as a function of the max gradient (15%) with overall max payload (600Kg) * wheel_radius
-       (calculating this way, it should be divided by 2 if 2 motors are used)
-       axle_eff_limit = 204.95 / 2 N m = ~102.5 -->
-    <!-- xacro:property name="axle_eff_limit" value="102.5"/ -->
-    <xacro:property name="axle_eff_limit" value="204.95"/>
-
-    <!-- max_speed = 33 Km/h = 9.17 m/s
-       axle_vel_limit = (2 * pi) * (max_speed / (pi * tire_dia)) =  39.02 rad/s -->
+    <xacro:property name="axle_eff_limit" value="100"/>
     <xacro:property name="axle_vel_limit" value="39.02"/>
 
     <!-- Servo_stall_torque of the direction axis in Nm. servo_no_load_speed is
        measured in rad/s. -->
-    <xacro:property name="servo_stall_torque" value="50"/>
-    <xacro:property name="servo_no_load_speed" value="25"/>
+    <xacro:property name="servo_stall_torque" value="100"/>
+    <xacro:property name="servo_no_load_speed" value="100"/>
 
     <!-- Basic Geometry of Body -->
     <xacro:property name="width" value="0.680618" />
@@ -162,7 +154,7 @@
             <parent link="${prefix}_ackerman_link"/>
             <child link="front_${suffix}_wheel"/>
             <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
-            <limit lower="0.0" upper="0.0" effort="10" velocity="100"/>
+            <limit effort="${axle_eff_limit}" velocity="${axle_vel_limit}"/>
         </joint>
 
         <!-- Gazebo Interface -->
@@ -220,16 +212,16 @@
             <parent link="base_link"/>
             <child link="rear_${suffix}_wheel"/>
             <origin xyz="-${length / 2.5} ${(width /2) * reflect} -${(height / 5) + (rear_wheel_diameter / 2)}" rpy="0.0 0.0 0.0"/>
-            <limit lower="0.0" upper="0.0" effort="10" velocity="100"/>
+            
         </joint>
 
         <!-- Gazebo Interface -->
         <gazebo reference="rear_${suffix}_wheel">
-            <mu1 value="1.0"/>
+            <!-- <mu1 value="1.0"/>
             <mu2 value="1.0"/>
             <kp value="10000000.0" />
             <kd value="1.0" />
-            <fdir1 value="1 0 0"/>
+            <fdir1 value="1 0 0"/> -->
             <material>Gazebo/Black</material>
         </gazebo>
 
