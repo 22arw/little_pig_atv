@@ -4,15 +4,15 @@ basic_geometry_pig:
     type: joint_state_controller/JointStateController
     publish_rate: 50
   
-  # Position Controllers
+  # Velocity Controllers
   front_left_wheel_position_controller:
     type: effort_controllers/JointPositionController
     joint: left_ackerman_link_front_left_wheel
-    pid: {p: 10.0, i: 0.01, d: 10.0}
+    pid: {p: 10000.0, i: 0.01, d: 10.0}
   front_right_wheel_position_controller:
     type: effort_controllers/JointPositionController
     joint: right_ackerman_link_front_right_wheel
-    pid: {p: 10.0, i: 0.01, d: 10.0}
+    pid: {p: 10000.0, i: 0.01, d: 10.0}
   
   left_steering_postion_contoller:
     type: effort_controllers/JointPositionController

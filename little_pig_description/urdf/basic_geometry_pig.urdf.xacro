@@ -46,9 +46,18 @@
         <inertial>
             <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
             <mass value="49.8952"/>
-            <inertia ixx="11.48" ixy="10.52" ixz="1.737" iyy="1.737" iyz="11.48" izz="10.52"/>
+            <inertia ixx="11.48" ixy="0.0" ixz="0.0" iyy="1.737" iyz="0.0" izz="10.52"/>
         </inertial>
     </link>
+
+    <!-- Gazebo Interface -->
+    <gazebo reference="base_link">
+        <mu1 value="0.0"/>
+        <mu2 value="0.0"/>
+        <kp value="10000000.0" />
+        <kd value="1.0" />
+        <material>Gazebo/Blue</material>
+    </gazebo>
 
     <!-- Ackerman Steering Macro -->
     <xacro:macro name="ackerman_steering" params="prefix reflect">
@@ -77,16 +86,17 @@
             <parent link="base_link"/>
             <child link="${prefix}_ackerman_link"/>
             <origin xyz="${length / 2.5} ${((ackerman_joint_width/2) + (width/2)) * reflect} -${(height / 2.25) + (ackerman_joint_diameter / 2)}" rpy="0.0 0.0 0.0"/>
-            <limit lower="-0.5" upper="0.5" effort="1.0" velocity="0.1"/>
+            <limit lower="-0.5" upper="0.5" effort="20.0" velocity="2.0"/>
         </joint>
 
         <!-- Gazebo Interface -->
         <gazebo reference="${prefix}_ackerman_link">
-            <mu1 value="200.0"/>
-            <mu2 value="100.0"/>
+            <mu1 value="1.0"/>
+            <mu2 value="1.0"/>
             <kp value="10000000.0" />
             <kd value="1.0" />
-            <material>Gazebo/Blue</material>
+            <fdir1 value="1 0 0"/>
+            <material>Gazebo/Black</material>
         </gazebo>
 
         <!-- The Transmission -->
@@ -134,14 +144,16 @@
             <parent link="${prefix}_ackerman_link"/>
             <child link="front_${suffix}_wheel"/>
             <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <limit lower="0.0" upper="0.0" effort="10" velocity="100"/>
         </joint>
 
         <!-- Gazebo Interface -->
         <gazebo reference="front_${suffix}_wheel">
-            <mu1 value="200.0"/>
-            <mu2 value="100.0"/>
+            <mu1 value="1.0"/>
+            <mu2 value="1.0"/>
             <kp value="10000000.0" />
             <kd value="1.0" />
+            <fdir1 value="0 0 1"/>
             <material>Gazebo/Black</material>
         </gazebo>
 
@@ -190,7 +202,30 @@
             <parent link="base_link"/>
             <child link="rear_${suffix}_wheel"/>
             <origin xyz="-${length / 2.5} ${(width /2) * reflect} -${(height / 5) + (rear_wheel_diameter / 2)}" rpy="0.0 0.0 0.0"/>
+            <limit lower="0.0" upper="0.0" effort="10" velocity="100"/>
         </joint>
+
+        <!-- Gazebo Interface -->
+        <gazebo reference="rear_${suffix}_wheel">
+            <mu1 value="1.0"/>
+            <mu2 value="1.0"/>
+            <kp value="10000000.0" />
+            <kd value="1.0" />
+            <fdir1 value="1 0 0"/>
+            <material>Gazebo/Black</material>
+        </gazebo>
+
+        <!-- The Transmission -->
+        <transmission name="base_to_rear_${suffix}_wheel_trans">
+            <type>transmission_interface/SimpleTransmission</type>
+            <joint name="base_to_rear_${suffix}_wheel">
+                <hardwareInterface>EffortJointInterface</hardwareInterface>
+            </joint>
+            <actuator name="base_to_rear_${suffix}_wheel_motor">
+                <hardwareInterface>EffortJointInterface</hardwareInterface>
+                <mechanicalReduction>1</mechanicalReduction>
+            </actuator>
+        </transmission>
 
     </xacro:macro>
 
