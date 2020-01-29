@@ -2,6 +2,30 @@
 <robot name="basic_frame_pig" 
     xmlns:xacro="http://www.ros.org/wiki/xacro">
 
+    <!-- Degree-to-radian conversions -->
+    <xacro:property name="degrees_45" value="0.785398163"/>
+    <xacro:property name="degrees_90" value="1.57079633"/>
+    <xacro:property name="degrees_180" value="3.14159265"/>
+
+    <!-- Servo_stall_torque of the direction axis in Nm. servo_no_load_speed is
+       measured in rad/s. -->
+    <xacro:property name="servo_stall_torque" value="50"/>
+    <xacro:property name="servo_no_load_speed" value="25"/>
+
+    <!-- axle eff limit = 2 * stall_torque 
+       as a function of the max gradient (15%) with overall max payload (600Kg) * wheel_radius
+       (calculating this way, it should be divided by 2 if 2 motors are used)
+       axle_eff_limit = 204.95 / 2 N m = ~102.5 -->
+    <!-- xacro:property name="axle_eff_limit" value="102.5"/ -->
+    <xacro:property name="axle_eff_limit" value="204.95"/>
+
+    <!-- max_speed = 33 Km/h = 9.17 m/s
+       axle_vel_limit = (2 * pi) * (max_speed / (pi * tire_dia)) =  39.02 rad/s -->
+    <xacro:property name="axle_vel_limit" value="39.02"/>
+
+    <xacro:property name="wheel_joint_damping" value="0.2" />
+    <xacro:property name="wheel_joint_friction" value="0.7" />
+
     <!-- Null inertial element. This is needed to make the model work with
        Gazebo. -->
     <xacro:macro name="null_inertial">
@@ -10,6 +34,61 @@
             <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
         </inertial>
     </xacro:macro>
+
+    <!-- Gazebo Interface -->
+    <gazebo reference="base_link">
+        <material>Gazebo/Grey</material>
+    </gazebo>
+
+    <!-- Gazebo Interface -->
+    <gazebo reference="left_steering_knuckle">
+        <material>Gazebo/Red</material>
+    </gazebo>
+
+    <!-- Gazebo Interface -->
+    <gazebo reference="front_left_wheel_hub">
+        <material>Gazebo/Blue</material>
+    </gazebo>
+
+    <!-- Gazebo Interface -->
+    <gazebo reference="front_left_wheel">
+        <material>Gazebo/Black</material>
+    </gazebo>
+
+    <!-- Gazebo Interface -->
+    <gazebo reference="right_steering_knuckle">
+        <material>Gazebo/Red</material>
+    </gazebo>
+
+    <!-- Gazebo Interface -->
+    <gazebo reference="front_right_wheel_hub">
+        <material>Gazebo/Blue</material>
+    </gazebo>
+
+    <!-- Gazebo Interface -->
+    <gazebo reference="front_Right_wheel">
+        <material>Gazebo/Black</material>
+    </gazebo>
+
+    <!-- Gazebo Interface -->
+    <gazebo reference="rear_left_hub">
+        <material>Gazebo/Blue</material>
+    </gazebo>
+
+    <!-- Gazebo Interface -->
+    <gazebo reference="rear_left_wheel">
+        <material>Gazebo/Black</material>
+    </gazebo>
+
+    <!-- Gazebo Interface -->
+    <gazebo reference="rear_right_hub">
+        <material>Gazebo/Blue</material>
+    </gazebo>
+
+    <!-- Gazebo Interface -->
+    <gazebo reference="rear_Right_wheel">
+        <material>Gazebo/Black</material>
+    </gazebo>
 
     <!-- Base Link / Tube Chasis-->
     <link name="base_link">
@@ -24,7 +103,7 @@
         <visual>
             <origin rpy="0 0 0" xyz="0 0 0"/>
             <geometry>
-                <mesh filename="package://little_pig_atv/urdf/bin_stl/base_link_m-binary.stl"/>
+                <mesh filename="package://little_pig_description/urdf/bin_stl/base_link_m-binary.stl"/>
             </geometry>
             <material name="silver">
                 <color rgba="1 0 0 1"/>
@@ -33,7 +112,7 @@
         <collision>
             <origin rpy="0 0 0" xyz="0 0 0"/>
             <geometry>
-                <mesh filename="package://little_pig_atv/urdf/bin_stl/base_link_m-binary.stl"/>
+                <mesh filename="package://little_pig_description/urdf/bin_stl/base_link_m-binary.stl"/>
             </geometry>
         </collision>
     </link>
@@ -51,7 +130,7 @@
         <visual>
             <origin rpy="0 0 0" xyz="-0.447222 0.622377 0.163596"/>
             <geometry>
-                <mesh filename="package://little_pig_atv/urdf/bin_stl/left_steering_knuckle_m-binary.stl"/>
+                <mesh filename="package://little_pig_description/urdf/bin_stl/left_steering_knuckle_m-binary.stl"/>
             </geometry>
             <material name="silver">
                 <color rgba="1 0 0 1"/>
@@ -60,7 +139,7 @@
         <collision>
             <origin rpy="0 0 0" xyz="-0.447222 0.622377 0.163596"/>
             <geometry>
-                <mesh filename="package://little_pig_atv/urdf/bin_stl/left_steering_knuckle_m-binary.stl"/>
+                <mesh filename="package://little_pig_description/urdf/bin_stl/left_steering_knuckle_m-binary.stl"/>
             </geometry>
         </collision>
     </link>
@@ -71,17 +150,17 @@
         <parent link="base_link"/>
         <child link="left_steering_knuckle"/>
         <axis xyz="-0.000375 -0.0 0.009993"/>
-        <limit lower="-0.5" upper="0.5" effort="1.0" velocity="1.0"/>
+        <limit lower="${-degrees_45}" upper="${degrees_45}" effort="${servo_stall_torque}" velocity="${servo_no_load_speed}"/>
     </joint>
 
     <!-- Base Link - Left Steering Knuckle Transmission -->
     <transmission name="base_link_to_left_steering_knuckle_transmission">
         <type>transmission_interface/SimpleTransmission</type>
         <joint name="base_link_to_left_steering_knuckle">
-            <hardwareInterface>PositionJointInterface</hardwareInterface>
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
         </joint>
         <actuator name="base_link_to_left_steering_knuckle_actr">
-            <hardwareInterface>PositionJointInterface</hardwareInterface>
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
             <mechanicalReduction>1</mechanicalReduction>
         </actuator>
     </transmission>
@@ -99,7 +178,7 @@
         <visual>
             <origin rpy="0 0 0" xyz="-0.526843 0.622377 0.097593"/>
             <geometry>
-                <mesh filename="package://little_pig_atv/urdf/bin_stl/front_left_wheel_hub_m-binary.stl"/>
+                <mesh filename="package://little_pig_description/urdf/bin_stl/front_left_wheel_hub_m-binary.stl"/>
             </geometry>
             <material name="silver">
                 <color rgba="1 0 0 1"/>
@@ -108,7 +187,7 @@
         <collision>
             <origin rpy="0 0 0" xyz="-0.526843 0.622377 0.097593"/>
             <geometry>
-                <mesh filename="package://little_pig_atv/urdf/bin_stl/front_left_wheel_hub_m-binary.stl"/>
+                <mesh filename="package://little_pig_description/urdf/bin_stl/front_left_wheel_hub_m-binary.stl"/>
             </geometry>
         </collision>
     </link>
@@ -119,16 +198,17 @@
         <parent link="left_steering_knuckle"/>
         <child link="front_left_wheel_hub"/>
         <axis xyz="-0.009993 -0.0 -0.000375"/>
+        <limit effort="${axle_eff_limit}" velocity="${axle_vel_limit}"/>
     </joint>
 
     <!-- Front Left Steering Knuckle to Front Left Wheel Hub Transmission -->
     <transmission name="front_left_steering_knuckle_front_left_wheel_hub_transmission">
         <type>transmission_interface/SimpleTransmission</type>
         <joint name="front_left_steering_knuckle_front_left_wheel_hub">
-            <hardwareInterface>EffortJointInterface</hardwareInterface>
+            <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
         </joint>
         <actuator name="front_left_steering_knuckle_front_left_wheel_hub_actr">
-            <hardwareInterface>EffortJointInterface</hardwareInterface>
+            <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
             <mechanicalReduction>1</mechanicalReduction>
         </actuator>
     </transmission>
@@ -146,7 +226,7 @@
         <visual>
             <origin rpy="0 0 0" xyz="-0.563887 0.622377 0.096202"/>
             <geometry>
-                <mesh filename="package://little_pig_atv/urdf/bin_stl/front_left_wheel_m-binary.stl"/>
+                <mesh filename="package://little_pig_description/urdf/bin_stl/front_left_wheel_m-binary.stl"/>
             </geometry>
             <material name="silver">
                 <color rgba="1 0 0 1"/>
@@ -155,7 +235,7 @@
         <collision>
             <origin rpy="0 0 0" xyz="-0.563887 0.622377 0.096202"/>
             <geometry>
-                <mesh filename="package://little_pig_atv/urdf/bin_stl/front_left_wheel_m-binary.stl"/>
+                <mesh filename="package://little_pig_description/urdf/bin_stl/front_left_wheel_m-binary.stl"/>
             </geometry>
         </collision>
     </link>
@@ -168,7 +248,7 @@
     </joint>
 
     <!-- Front Left Wheel Hub to Front Left Wheel Joint-->
-    <transmission name="front_left_wheel_hub_front_left_wheel_transmission">
+    <!-- <transmission name="front_left_wheel_hub_front_left_wheel_transmission">
         <type>transmission_interface/SimpleTransmission</type>
         <joint name="front_left_wheel_hub_front_left_wheel">
             <hardwareInterface>PositionJointInterface</hardwareInterface>
@@ -177,7 +257,7 @@
             <hardwareInterface>PositionJointInterface</hardwareInterface>
             <mechanicalReduction>1</mechanicalReduction>
         </actuator>
-    </transmission>
+    </transmission> -->
 
     <!-- Right Steering Knuckle -->
     <link name="right_steering_knuckle">
@@ -192,7 +272,7 @@
         <visual>
             <origin rpy="0 0 0" xyz="0.457954 0.622377 0.162568"/>
             <geometry>
-                <mesh filename="package://little_pig_atv/urdf/bin_stl/right_steering_knuckle_m-binary.stl"/>
+                <mesh filename="package://little_pig_description/urdf/bin_stl/right_steering_knuckle_m-binary.stl"/>
             </geometry>
             <material name="silver">
                 <color rgba="1 0 0 1"/>
@@ -201,7 +281,7 @@
         <collision>
             <origin rpy="0 0 0" xyz="0.457954 0.622377 0.162568"/>
             <geometry>
-                <mesh filename="package://little_pig_atv/urdf/bin_stl/right_steering_knuckle_m-binary.stl"/>
+                <mesh filename="package://little_pig_description/urdf/bin_stl/right_steering_knuckle_m-binary.stl"/>
             </geometry>
         </collision>
     </link>
@@ -212,17 +292,17 @@
         <parent link="base_link"/>
         <child link="right_steering_knuckle"/>
         <axis xyz="0.000412 -0.0 0.009992"/>
-        <limit lower="-0.5" upper="0.5" effort="1.0" velocity="1.0"/>
+        <limit lower="${-degrees_45}" upper="${degrees_45}" effort="${servo_stall_torque}" velocity="${servo_no_load_speed}"/>
     </joint>
 
     <!-- Base Link - Right Steering Knuckle Transmission -->
     <transmission name="base_link_to_right_steering_knuckle_transmission">
         <type>transmission_interface/SimpleTransmission</type>
         <joint name="base_link_to_right_steering_knuckle">
-            <hardwareInterface>PositionJointInterface</hardwareInterface>
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
         </joint>
         <actuator name="base_link_to_right_steering_knuckle_actr">
-            <hardwareInterface>PositionJointInterface</hardwareInterface>
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
             <mechanicalReduction>1</mechanicalReduction>
         </actuator>
     </transmission>
@@ -240,7 +320,7 @@
         <visual>
             <origin rpy="0 0 0" xyz="0.526428 0.622377 0.096724"/>
             <geometry>
-                <mesh filename="package://little_pig_atv/urdf/bin_stl/front_right_wheel_hub_m-binary.stl"/>
+                <mesh filename="package://little_pig_description/urdf/bin_stl/front_right_wheel_hub_m-binary.stl"/>
             </geometry>
             <material name="silver">
                 <color rgba="1 0 0 1"/>
@@ -249,7 +329,7 @@
         <collision>
             <origin rpy="0 0 0" xyz="0.526428 0.622377 0.096724"/>
             <geometry>
-                <mesh filename="package://little_pig_atv/urdf/bin_stl/front_right_wheel_hub_m-binary.stl"/>
+                <mesh filename="package://little_pig_description/urdf/bin_stl/front_right_wheel_hub_m-binary.stl"/>
             </geometry>
         </collision>
     </link>
@@ -260,16 +340,17 @@
         <parent link="right_steering_knuckle"/>
         <child link="front_right_wheel_hub"/>
         <axis xyz="0.009992 0.0 -0.000412"/>
+        <limit effort="${axle_eff_limit}" velocity="${axle_vel_limit}"/>
     </joint>
 
     <!-- Right Steering Knuckle - Front Right Wheel Hub Transmission -->
     <transmission name="right_steering_knuckle_front_right_hub_transmission">
         <type>transmission_interface/SimpleTransmission</type>
         <joint name="right_steering_knuckle_front_right_hub">
-            <hardwareInterface>PositionJointInterface</hardwareInterface>
+            <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
         </joint>
         <actuator name="right_steering_knuckle_front_right_hub_actr">
-            <hardwareInterface>PositionJointInterface</hardwareInterface>
+            <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
             <mechanicalReduction>1</mechanicalReduction>
         </actuator>
     </transmission>
@@ -287,7 +368,7 @@
         <visual>
             <origin rpy="0 0 0" xyz="0.574387 0.622377 0.094748"/>
             <geometry>
-                <mesh filename="package://little_pig_atv/urdf/bin_stl/front_right_wheel_m-binary.stl"/>
+                <mesh filename="package://little_pig_description/urdf/bin_stl/front_right_wheel_m-binary.stl"/>
             </geometry>
             <material name="silver">
                 <color rgba="1 0 0 1"/>
@@ -296,7 +377,7 @@
         <collision>
             <origin rpy="0 0 0" xyz="0.574387 0.622377 0.094748"/>
             <geometry>
-                <mesh filename="package://little_pig_atv/urdf/bin_stl/front_right_wheel_m-binary.stl"/>
+                <mesh filename="package://little_pig_description/urdf/bin_stl/front_right_wheel_m-binary.stl"/>
             </geometry>
         </collision>
     </link>
@@ -309,7 +390,7 @@
     </joint>
 
     <!-- Front Right Wheel Hub to Front Right Wheel Transmission -->
-    <transmission name="front_right_wheel_hub_front_right_wheel_transmission">
+    <!-- <transmission name="front_right_wheel_hub_front_right_wheel_transmission">
         <type>transmission_interface/SimpleTransmission</type>
         <joint name="front_right_wheel_hub_front_right_wheel">
             <hardwareInterface>PositionJointInterface</hardwareInterface>
@@ -318,7 +399,7 @@
             <hardwareInterface>PositionJointInterface</hardwareInterface>
             <mechanicalReduction>1</mechanicalReduction>
         </actuator>
-    </transmission>
+    </transmission> -->
 
     <!-- Rear Left Wheel Hub -->
     <link name="rear_left_hub">
@@ -333,7 +414,7 @@
         <visual>
             <origin rpy="0 0 0" xyz="-0.547664 -0.788123 0.102833"/>
             <geometry>
-                <mesh filename="package://little_pig_atv/urdf/bin_stl/rear_left_hub_m-binary.stl"/>
+                <mesh filename="package://little_pig_description/urdf/bin_stl/rear_left_hub_m-binary.stl"/>
             </geometry>
             <material name="silver">
                 <color rgba="1 0 0 1"/>
@@ -342,7 +423,7 @@
         <collision>
             <origin rpy="0 0 0" xyz="-0.547664 -0.788123 0.102833"/>
             <geometry>
-                <mesh filename="package://little_pig_atv/urdf/bin_stl/rear_left_hub_m-binary.stl"/>
+                <mesh filename="package://little_pig_description/urdf/bin_stl/rear_left_hub_m-binary.stl"/>
             </geometry>
         </collision>
     </link>
@@ -353,6 +434,7 @@
         <parent link="base_link"/>
         <child link="rear_left_hub"/>
         <axis xyz="0.01 -0.0 -5.4e-05"/>
+        <limit effort="${axle_eff_limit}" velocity="${axle_vel_limit}"/>
     </joint>
 
     <!-- Base Link to Rear Left Wheel Hub Transmission -->
@@ -380,7 +462,7 @@
         <visual>
             <origin rpy="0 0 0" xyz="-0.584846 -0.788123 0.103034"/>
             <geometry>
-                <mesh filename="package://little_pig_atv/urdf/bin_stl/rear_left_wheel_m-binary.stl"/>
+                <mesh filename="package://little_pig_description/urdf/bin_stl/rear_left_wheel_m-binary.stl"/>
             </geometry>
             <material name="silver">
                 <color rgba="1 0 0 1"/>
@@ -389,7 +471,7 @@
         <collision>
             <origin rpy="0 0 0" xyz="-0.584846 -0.788123 0.103034"/>
             <geometry>
-                <mesh filename="package://little_pig_atv/urdf/bin_stl/rear_left_wheel_m-binary.stl"/>
+                <mesh filename="package://little_pig_description/urdf/bin_stl/rear_left_wheel_m-binary.stl"/>
             </geometry>
         </collision>
     </link>
@@ -426,7 +508,7 @@
         <visual>
             <origin rpy="0 0 0" xyz="0.547263 -0.788123 0.13233"/>
             <geometry>
-                <mesh filename="package://little_pig_atv/urdf/bin_stl/rear_right_hub_m-binary.stl"/>
+                <mesh filename="package://little_pig_description/urdf/bin_stl/rear_right_hub_m-binary.stl"/>
             </geometry>
             <material name="silver">
                 <color rgba="1 0 0 1"/>
@@ -435,7 +517,7 @@
         <collision>
             <origin rpy="0 0 0" xyz="0.547263 -0.788123 0.13233"/>
             <geometry>
-                <mesh filename="package://little_pig_atv/urdf/bin_stl/rear_right_hub_m-binary.stl"/>
+                <mesh filename="package://little_pig_description/urdf/bin_stl/rear_right_hub_m-binary.stl"/>
             </geometry>
         </collision>
     </link>
@@ -446,6 +528,7 @@
         <parent link="base_link"/>
         <child link="rear_right_hub"/>
         <axis xyz="-0.01 0.0 1.2e-05"/>
+        <limit effort="${axle_eff_limit}" velocity="${axle_vel_limit}"/>
     </joint>
 
     <!-- Base Link to Rear Right Wheel Hub Transmission -->
@@ -473,7 +556,7 @@
         <visual>
             <origin rpy="0 0 0" xyz="0.584444 -0.788123 0.132285"/>
             <geometry>
-                <mesh filename="package://little_pig_atv/urdf/bin_stl/rear_right_wheel_m-binary.stl"/>
+                <mesh filename="package://little_pig_description/urdf/bin_stl/rear_right_wheel_m-binary.stl"/>
             </geometry>
             <material name="silver">
                 <color rgba="1 0 0 1"/>
@@ -482,10 +565,12 @@
         <collision>
             <origin rpy="0 0 0" xyz="0.584444 -0.788123 0.132285"/>
             <geometry>
-                <mesh filename="package://little_pig_atv/urdf/bin_stl/rear_right_wheel_m-binary.stl"/>
+                <mesh filename="package://little_pig_description/urdf/bin_stl/rear_right_wheel_m-binary.stl"/>
             </geometry>
         </collision>
     </link>
+
+    
 
     <!-- Rear Right Wheel Hub to Rear Right Wheel Joint -->
     <joint name="rear_right_wheel_hub_rear_right_wheel" type="fixed">
