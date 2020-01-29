@@ -5,7 +5,7 @@
 
     <!-- load the controllers -->
     <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" ns="/basic_geometry_pig" 
-        args="front_left_wheel_position_controller front_right_wheel_position_controller left_steering_postion_contoller right_steering_postion_contoller joint_state_controller"/>
+        args="front_left_wheel_velocity_ctrl front_right_wheel_velocity_ctrl left_steering_postion_ctrl right_steering_postion_ctrl joint_state_controller"/>
 
     <!-- convert joint states to TF transforms for rviz, etc -->
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"

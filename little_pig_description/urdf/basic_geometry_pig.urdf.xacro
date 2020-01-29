@@ -6,12 +6,34 @@
     <!-- Standard Params -->
     <xacro:property name="pi" value="3.1415" />
 
+    <!-- Degree-to-radian conversions -->
+    <xacro:property name="degrees_45" value="0.785398163"/>
+    <xacro:property name="degrees_90" value="1.57079633"/>
+    <xacro:property name="degrees_180" value="3.14159265"/>
+
+    <!-- Inertia Generator -->
     <xacro:macro name="default_inertial" params="mass">
         <inertial>
             <mass value="${mass}" />
             <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />
         </inertial>
     </xacro:macro>
+
+    <!-- axle eff limit = 2 * stall_torque 
+       as a function of the max gradient (15%) with overall max payload (600Kg) * wheel_radius
+       (calculating this way, it should be divided by 2 if 2 motors are used)
+       axle_eff_limit = 204.95 / 2 N m = ~102.5 -->
+    <!-- xacro:property name="axle_eff_limit" value="102.5"/ -->
+    <xacro:property name="axle_eff_limit" value="204.95"/>
+
+    <!-- max_speed = 33 Km/h = 9.17 m/s
+       axle_vel_limit = (2 * pi) * (max_speed / (pi * tire_dia)) =  39.02 rad/s -->
+    <xacro:property name="axle_vel_limit" value="39.02"/>
+
+    <!-- Servo_stall_torque of the direction axis in Nm. servo_no_load_speed is
+       measured in rad/s. -->
+    <xacro:property name="servo_stall_torque" value="50"/>
+    <xacro:property name="servo_no_load_speed" value="25"/>
 
     <!-- Basic Geometry of Body -->
     <xacro:property name="width" value="0.680618" />
@@ -52,10 +74,6 @@
 
     <!-- Gazebo Interface -->
     <gazebo reference="base_link">
-        <mu1 value="0.0"/>
-        <mu2 value="0.0"/>
-        <kp value="10000000.0" />
-        <kd value="1.0" />
         <material>Gazebo/Blue</material>
     </gazebo>
 
@@ -86,7 +104,7 @@
             <parent link="base_link"/>
             <child link="${prefix}_ackerman_link"/>
             <origin xyz="${length / 2.5} ${((ackerman_joint_width/2) + (width/2)) * reflect} -${(height / 2.25) + (ackerman_joint_diameter / 2)}" rpy="0.0 0.0 0.0"/>
-            <limit lower="-0.5" upper="0.5" effort="20.0" velocity="2.0"/>
+            <limit lower="${-degrees_45}" upper="${degrees_45}" effort="${servo_stall_torque}" velocity="${servo_no_load_speed}"/>
         </joint>
 
         <!-- Gazebo Interface -->
@@ -103,10 +121,10 @@
         <transmission name="base_link_${prefix}_ackerman_link_trans">
             <type>transmission_interface/SimpleTransmission</type>
             <joint name="base_link_${prefix}_ackerman_link">
-                <hardwareInterface>EffortJointInterface</hardwareInterface>
+                <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
             </joint>
             <actuator name="base_link_${prefix}_ackerman_link_motor">
-                <hardwareInterface>EffortJointInterface</hardwareInterface>
+                <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
                 <mechanicalReduction>1</mechanicalReduction>
             </actuator>
         </transmission>
@@ -161,10 +179,10 @@
         <transmission name="${prefix}_ackerman_link_front_${suffix}_wheel_trans">
             <type>transmission_interface/SimpleTransmission</type>
             <joint name="${prefix}_ackerman_link_front_${suffix}_wheel">
-                <hardwareInterface>EffortJointInterface</hardwareInterface>
+                <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
             </joint>
             <actuator name="${prefix}_ackerman_link_front_${suffix}_wheel_motor">
-                <hardwareInterface>EffortJointInterface</hardwareInterface>
+                <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
                 <mechanicalReduction>1</mechanicalReduction>
             </actuator>
         </transmission>
@@ -219,10 +237,10 @@
         <transmission name="base_to_rear_${suffix}_wheel_trans">
             <type>transmission_interface/SimpleTransmission</type>
             <joint name="base_to_rear_${suffix}_wheel">
-                <hardwareInterface>EffortJointInterface</hardwareInterface>
+                <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
             </joint>
             <actuator name="base_to_rear_${suffix}_wheel_motor">
-                <hardwareInterface>EffortJointInterface</hardwareInterface>
+                <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
                 <mechanicalReduction>1</mechanicalReduction>
             </actuator>
         </transmission>
