@@ -434,11 +434,11 @@
         <parent link="base_link"/>
         <child link="rear_left_hub"/>
         <axis xyz="0.01 -0.0 -5.4e-05"/>
-        <limit effort="${axle_eff_limit}" velocity="${axle_vel_limit}"/>
+        <!-- <limit effort="${axle_eff_limit}" velocity="${axle_vel_limit}"/> -->
     </joint>
 
     <!-- Base Link to Rear Left Wheel Hub Transmission -->
-    <transmission name="base_link_rear_left_wheel_hub_transmission">
+    <!-- <transmission name="base_link_rear_left_wheel_hub_transmission">
         <type>transmission_interface/SimpleTransmission</type>
         <joint name="base_link_rear_left_wheel_hub">
             <hardwareInterface>PositionJointInterface</hardwareInterface>
@@ -447,7 +447,7 @@
             <hardwareInterface>PositionJointInterface</hardwareInterface>
             <mechanicalReduction>1</mechanicalReduction>
         </actuator>
-    </transmission>
+    </transmission> -->
 
     <!-- Rear Left Wheel -->
     <link name="rear_left_wheel">
@@ -484,7 +484,7 @@
     </joint>
 
     <!-- Rear Left Wheel Hub to Rear Left Wheel Transmission -->
-    <transmission name="rear_left_wheel_hub_rear_left_wheel_transmission">
+    <!-- <transmission name="rear_left_wheel_hub_rear_left_wheel_transmission">
         <type>transmission_interface/SimpleTransmission</type>
         <joint name="rear_left_wheel_hub_rear_left_wheel">
             <hardwareInterface>PositionJointInterface</hardwareInterface>
@@ -493,7 +493,7 @@
             <hardwareInterface>PositionJointInterface</hardwareInterface>
             <mechanicalReduction>1</mechanicalReduction>
         </actuator>
-    </transmission>
+    </transmission> -->
 
     <!-- Rear Right Wheel Hub -->
     <link name="rear_right_hub">

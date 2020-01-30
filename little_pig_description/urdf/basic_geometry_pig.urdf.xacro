@@ -212,7 +212,6 @@
             <parent link="base_link"/>
             <child link="rear_${suffix}_wheel"/>
             <origin xyz="-${length / 2.5} ${(width /2) * reflect} -${(height / 5) + (rear_wheel_diameter / 2)}" rpy="0.0 0.0 0.0"/>
-            
         </joint>
 
         <!-- Gazebo Interface -->
@@ -226,7 +225,7 @@
         </gazebo>
 
         <!-- The Transmission -->
-        <transmission name="base_to_rear_${suffix}_wheel_trans">
+        <!-- <transmission name="base_to_rear_${suffix}_wheel_trans">
             <type>transmission_interface/SimpleTransmission</type>
             <joint name="base_to_rear_${suffix}_wheel">
                 <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
@@ -235,7 +234,7 @@
                 <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
                 <mechanicalReduction>1</mechanicalReduction>
             </actuator>
-        </transmission>
+        </transmission> -->
 
     </xacro:macro>
 
