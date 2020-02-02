@@ -3,7 +3,7 @@
 
     <group ns="$(arg namespace)">
         <!-- Robot description -->
-        <param name="robot_desciption" command="$(find xacro)/xacro $(find little_pig_description)/urdf/basic_geometry_pig.urdf.xacro"/>
+        <param name="robot_description" command="$(find xacro)/xacro $(find little_pig_description)/urdf/basic_geometry_pig.urdf.xacro"/>
 
         <!-- Read the joint positions, then publish to TF -->
         <node name="vehicle_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">

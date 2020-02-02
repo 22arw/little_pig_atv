@@ -21,6 +21,3 @@ install(DIRECTORY launch
 
 install(DIRECTORY src
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
-
-add_executable(sender src/sender-example.cpp)
-target_link_libraries(sender ${catkin_LIBRARIES})
