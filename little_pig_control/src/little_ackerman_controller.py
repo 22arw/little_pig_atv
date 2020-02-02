@@ -15,7 +15,7 @@ from controller_manager_msgs.srv import ListControllers
 
 class _LittleAckermannCtrlr(object):
 
-    # [ ] - Build init.
+    # [x] - Build init.
     def __init__(self):
 
         rospy.init_node("ackermann_cotnroller")
@@ -108,8 +108,41 @@ class _LittleAckermannCtrlr(object):
         # Define the Ackermann Command subscriber
         self._ackermann_cmd_sub = rospy.Subscriber("ackermann_cmd", AckermannDrive, self.little_ackerman_cmd_cb, queue_size=1)
 
-    # [ ] - Build spin.
+    # [x] - Build spin.
     def spin(self):
+
+        last_time = rospy.get_time()
+
+        while not rospy.is_shutdown():
+            t = rospy.get_time()
+            delta_t = t - last_time
+            last_time = t
+
+            if (self._cmd_timeout > 0.0 and t - self._last_cmd_time > self._cmd_timeout):
+                
+                steer_ang_changed, center_y = self._ctrl_steering(self._last_steer_ang, 0.0, 0.001)
+                self._ctrl_axles(0.0, 0.0, 0.0, steer_ang_changed, center_y)
+            elif delta_t > 0.0:
+                with self._ackermann_cmd_lock:
+                    steer_ang = self._steer_ang
+                    steer_ang_vel = self._steer_ang_vel
+                    speed = self._speed
+                    accel = self._accel
+                steer_ang_changed, center_y = self._ctrl_steering(steer_ang, steer_ang_vel, delta_t)
+                self._ctrl_axles(speed, accel, delta_t, steer_ang_changed, center_y)
+
+            # Publish the steering angle commands.
+            self._left_steer_cmd_pub.publish(self._theta_left)
+            self._right_steer_cmd_pub.publish(self._theta_right)
+
+            # Publish the axle velocity commands.
+            # Ommiting the rear axles as they are not driven
+            if self._left_front_axle_cmd_pub:
+                self._left_front_axle_cmd_pub.publish(self._left_front_ang_vel)
+            if self._right_front_axle_cmd_pub:
+                self._right_front_axle_cmd_pub.publish(self._right_front_ang_vel)
+
+            self._sleep_timer.sleep()
     
     # [ ] - Build callback.
     def little_ackermann_cmd_cb(self, ackermann_cmd):
