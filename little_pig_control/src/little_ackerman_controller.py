@@ -194,11 +194,38 @@ class _LittleAckermannCtrlr(object):
 
         return axle_ctrlr_name, 1 / (pi * dia)
 
-    # [ ] - Build link positions.
+    # [x] - Build link positions.
     def _get_link_postion(self, tfl, link):
 
-    # [ ] - Build control steering.
+        while True:
+            try:
+                trans, not_used = tfl.lookupTransform(self._right_rear_link_name, link, rospy.Time(0))
+
+                return numpy.arrar(trans)
+            except:
+                pass
+
+    # [x] - Build control steering.
     def _ctrl_steering(self, steer_ang, steer_ang_vel_limit, delta_t):
+
+        if steer_ang_vel_limit > 0.0:
+            ang_vel = (steer_ang - self._last_steer_ang) / delta_t
+            ang_vel = max(-steer_ang_vel_limit, min(ang_vel, steer_ang_vel_limit))
+
+            theta = self._last_steer_ang + ang_vel * delta_t
+        else:
+            theta = steer_ang
+
+        center_y = self._wheelbase * math.tan((pi / 2) - theta)
+
+        steer_ang_changed = theta != self._last_steer_ang
+
+        if steer_ang_changed:
+            self._last_steer_ang = theta
+            self._theta_left = _get_steer_ang(math.atan(self._inv_wheelbase * (center_y - self._joint_dist_div_2)))
+            self._theta_right = _get_steer_ang(math.atan(self._inv_wheelbase * (center_y + self._joint_dist_div_2)))
+
+        return steer_ang_changed. center_y
 
     # [ ] - Build control axles.
     def _ctrl_axles(self, speed, accel_limit, delta_t, steer_ang_changed, center_y):
