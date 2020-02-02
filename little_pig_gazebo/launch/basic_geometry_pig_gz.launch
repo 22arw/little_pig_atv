@@ -33,7 +33,7 @@
         <node name="contoller_spawner" pkg="contoller_manager" type="spawner" args="$(find little_pig_control)/config/basic_geometry_pig_joint_ctrlr_params.yaml"/>
 
         <!-- Use the little_ackermann_controller to steer and ctrl velocity -->
-        <node name="little_ackerman_controller" pkg="little_pig_control" type="little_ackerman_controller">
+        <node name="ackerman_controller" pkg="little_pig_control" type="ackerman_controller">
             <param name="cmd_timeout" value="$(arg cmd_timeout)"/>
             <rosparam file="$(find litte_pig_control)/config/little_pig_ackermann_ctrlr_params.yaml" command="load" />
         </node>
