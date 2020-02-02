@@ -24,3 +24,13 @@ front_right_wheel:
   steering_controller_name: right_steering_position_ctrl
   axle_controller_name: front_right_wheel_velocity_ctrl
   diameter: 0.605
+
+rear_left_wheel:
+  link_name: left_rear_wheel
+  axle_controller_name: rear_left_wheel_velocity_ctrl
+  diameter: 0.635
+
+rear_right_wheel:
+  link_name: right_rear_wheel
+  axle_controller_name: rear_right_wheel_velocity_ctrl
+  diameter: 0.635

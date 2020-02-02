@@ -50,3 +50,17 @@ front_right_wheel_velocity_ctrl:
   joint: right_ackerman_link_front_right_wheel
   # These PIDs might need to be adjusted
   pid: { p: 10000.0, i: 0.01, d: 10.0 }
+
+# Rear left wheel
+rear_left_wheel_velocity_ctrl:
+  type: velocity_controllers/JointVelocityController
+  joint: base_link_rear_left_wheel
+  # These PIDs might need to be adjusted
+  pid: { p: 10000.0, i: 0.01, d: 10.0 }
+
+# Rear right wheel
+rear_right_wheel_velocity_ctrl:
+  type: velocity_controllers/JointVelocityController
+  joint: base_link_rear_right_wheel
+  # These PIDs might need to be adjusted
+  pid: { p: 10000.0, i: 0.01, d: 10.0 }
