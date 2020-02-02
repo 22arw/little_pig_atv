@@ -15,22 +15,31 @@ from controller_manager_msgs.srv import ListControllers
 
 class _LittleAckermannCtrlr(object):
 
+    # [ ] - Build init.
     def __init__(self):
     
+    # [ ] - Build spin.
     def spin(self):
-
+    
+    # [ ] - Build callback.
     def little_ackermann_cmd_cb(self, ackermann_cmd):
     
+    # [ ] - Build front wheel params.
     def _get_front_wheel_params(self, side):
-
+    
+    # [ ] - Build rear wheel params.
     def _get_rear_wheel_params(self, side):
 
+    # [ ] - Build common wheel params.
     def _get_common_wheel_params(self, prefix):
 
+    # [ ] - Build link positions.
     def _get_link_postion(self, tfl, link):
 
+    # [ ] - Build control steering.
     def _ctrl_steering(self, steer_ang, steer_ang_vel_limit, delta_t):
 
+    # [ ] - Build control axles.
     def _ctrl_axles(self, speed, accel_limit, delta_t, steer_ang_changed, center_y):
 
 # End of LittleAckermannCtrlr Class
