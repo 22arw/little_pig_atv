@@ -24,6 +24,11 @@ class _LittleAckermannCtrlr(object):
         (left_steer_link_name, left_steer_ctrlr_name, left_front_axle_ctrlr_name, self._left_front_inv_circ) = self._get_front_wheel_params("left")
         (right_steer_link_name, right_steer_ctrlr_name, right_front_axle_ctlrlr_name, self._right_front_inv_circ) self._get_front_wheel_params("right")
 
+        # Rear Wheels
+        (left_rear_link_name, left_rear_axle_ctrlr_name, self._left_rear_inv_circ) = self._get_rear_wheel_params("left")
+        (right_rear_link_name, right_rear_axle_ctrlr_name, self._right_rear_inv_circ) = self._get_rear_wheel_params("right")
+
+
         list_ctrlrs = rospy.ServiceProxy("controller_manager/list_controllers", ListControllers)
         list_ctrlrs.wait_for_service()
 
@@ -78,7 +83,30 @@ class _LittleAckermannCtrlr(object):
 
         self._joint_dist_div_2 = numpy.linalg.norm(lsl_pos - rsl_pos) / 2
 
-        # PICK UP HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!   
+        # Define the rear left and right wheel links
+        lrw_pos = self._get_rear_wheel_params(tfl, left_rear_link_name)
+        rrw_pos = self._get_rear_wheel_params(tfl, right_rear_link_name)
+
+        # Calculate the centers of the front and rear wheels
+        front_center_pos = (lsl_pos + rsl_pos) / 2
+        rear_center_pos = (lrw_pos + rrw_pos) / 2
+
+        # Calculate the wheelbase 
+        self._wheelbase = numpy.linalg.norm(front_center_pos - rear_center_pos)
+        self._inv_wheelbase = 1 / self._wheelbase
+        self._wheelbase_sqr = self._wheelbase ** 2
+
+        # Define the steering publishers
+        self._left_steer_cmd_pub = _create_cmd_pub(list_ctrlrs, left_steer_ctrlr_name)
+        self._right_steer_cmd_pub = _create_cmd_pub(list_ctrlrs, right_steer_ctrlr_name)
+
+        # Define the axle publishers
+        # - Ommiting the rear as the real pig doesn't have rear wheel drive
+        self._left_front_axle_cmd_pub = _create_axle_cmd_pub(list_ctrlrs, left_front_axle_ctrlr_name)
+        self._right_front_axle_cmd_pub = _create_axle_cmd_pub(list_ctrlrs, right_front_axle_ctlrlr_name)
+
+        # Define the Ackermann Command subscriber
+        self._ackermann_cmd_sub = rospy.Subscriber("ackermann_cmd", AckermannDrive, self.little_ackerman_cmd_cb, queue_size=1)
 
     # [ ] - Build spin.
     def spin(self):
@@ -99,11 +127,31 @@ class _LittleAckermannCtrlr(object):
 
         return steer_link_name, steer_ctrlr_name, axle_ctrlr_name, inv_circ
     
-    # [ ] - Build rear wheel params.
+    # [x] - Build rear wheel params.
     def _get_rear_wheel_params(self, side):
 
-    # [ ] - Build common wheel params.
+        prefix = "~" + side + "_rear_wheel/"
+        link_name = rospy.get_param(prefix + "link_name", side + "_wheel")
+        axle_ctrlr_name, inv_circ = self._get_common_wheel_params(prefix)
+
+        return link_name, axle_ctrlr_name, inv_circ
+
+    # [x] - Build common wheel params.
     def _get_common_wheel_params(self, prefix):
+
+        axle_ctrlr_name = rospy.get_param(prefix + "axle_controller_name", None)
+
+        try:
+            dia = float(rospy.get_param(prefix + "diameter", self._DEF_WHEEL_DIA))
+
+            if dia <= 0.0:
+                raise ValueError
+        except:
+            rospy.logwarn("The speficied wheel diameter is invalid. ")
+
+            dia = self._DEF_WHEEL_DIA
+
+        return axle_ctrlr_name, 1 / (pi * dia)
 
     # [ ] - Build link positions.
     def _get_link_postion(self, tfl, link):
