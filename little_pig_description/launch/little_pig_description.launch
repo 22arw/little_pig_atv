@@ -1,5 +1,5 @@
 <launch>
-    <arg name="namespace" default="basic_geometry_pig"/>
+    <arg name="namespace" default="/"/>
 
     <group ns="$(arg namespace)">
         <!-- Robot description -->

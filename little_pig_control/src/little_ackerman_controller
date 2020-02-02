@@ -13,7 +13,7 @@ from ackermann_msgs.msg import AckermannDrive
 from std_msgs.msg import Float64
 from controller_manager_msgs.srv import ListControllers
 
-class _LittleAckermannCtrlr(object):
+class _AckermannCtrlr(object):
 
     # [x] - Build init.
     def __init__(self):
@@ -22,7 +22,7 @@ class _LittleAckermannCtrlr(object):
 
         # Front Wheels
         (left_steer_link_name, left_steer_ctrlr_name, left_front_axle_ctrlr_name, self._left_front_inv_circ) = self._get_front_wheel_params("left")
-        (right_steer_link_name, right_steer_ctrlr_name, right_front_axle_ctlrlr_name, self._right_front_inv_circ) self._get_front_wheel_params("right")
+        (right_steer_link_name, right_steer_ctrlr_name, right_front_axle_ctlrlr_name, self._right_front_inv_circ) = self._get_front_wheel_params("right")
 
         # Rear Wheels
         (left_rear_link_name, left_rear_axle_ctrlr_name, self._left_rear_inv_circ) = self._get_rear_wheel_params("left")
@@ -160,7 +160,7 @@ class _LittleAckermannCtrlr(object):
 
         prefix = "~" + side + "_front_wheel/"
 
-        steer_link_name = rospy.get_param(prefix + "steering_link_name" + side + "steering_link")
+        steer_link_name = rospy.get_param(prefix + "steering_link_name", side + "steering_link")
 
         steer_ctrlr_name = rospy.get_param(prefix + "steering_controller_name", side + "_steering_contoller")
 
@@ -295,5 +295,5 @@ def _get_steer_ang(phi):
 
 # main
 if __name__ == "__main__":
-    ctrlr = _LittleAckermannCtrlr()
+    ctrlr = _AckermannCtrlr()
     ctrlr.spin()
