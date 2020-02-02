@@ -144,8 +144,16 @@ class _LittleAckermannCtrlr(object):
 
             self._sleep_timer.sleep()
     
-    # [ ] - Build callback.
+    # [x] - Build callback.
     def little_ackermann_cmd_cb(self, ackermann_cmd):
+
+        self._last_cmd_time = rospy.get_time()
+
+        with self._ackermann_cmd_lock:
+            self._steer_ang = ackermann_cmd.steering_angle
+            self._steer_ang_vel = ackermann_cmd.steering_angle_velocity
+            self._speed = ackermann_cmd.speed
+            self._accel = ackermann_cmd.acceleration
     
     # [X] - Build front wheel params.
     def _get_front_wheel_params(self, side):
