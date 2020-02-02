@@ -1,13 +1,42 @@
 <launch>
 
-    <arg name="model" default="$(find little_pig_description)/urdf/basic_geometry_pig.urdf.xacro"/>
+    <arg name="namespace" default="/" />
+    <arg name="world_name" default="worlds/empty_world" />
+    <arg name="cmd_timeout" default="0.5"/>
 
-    <include file="$(find urdf_sim_tutorial)/launch/gazebo.launch">
-        <arg name="model" value="$(arg model)" />
+    <!-- Vehicle pose arguments -->
+    <arg name="x" default="0.0"/>
+    <arg name="y" default="0.0"/>
+    <arg name="z" default="0.1" />
+    <arg name="roll" default="0.0"/>
+    <arg name="pitch" default="0.0"/>
+    <arg name="yaw" default="0.0"/>
+
+    <include file="$(find little_pig_description)/launch/little_pig_description.launch">
+        <arg name="namespace" default="$(arg namespace)"/>
     </include>
-    
-    <!-- Load the URDF into the ROS Parameter Server -->
-    <param name="robot_description"
-        command="$(find xacro)/xacro --inorder '$(find little_pig_description)/urdf/basic_geometry_pig.urdf.xacro'" />
+
+    <group ns="$(arg namespace)">
+        <!-- Create the world -->
+        <include file="$(find gazebo_ros)/launch/empty_world.launch">
+            <arg name="world_name" default="$(arg world_name)"/>
+        </include>
+
+        <!-- Spawn the little pig -->
+        <node name="spawn_vehicle" pkg="gazebo_ros" type="spawn_model" 
+            args="-urdf -param robot_desciption -model basic_geometry_pig
+                -gazebo_namespace /$(arg namespace)/gazebo
+                -x $(arg x) -y $(arg y) -z $(arg z)
+                -R $(arg roll) -P $(arg pitch) -Y $(arg yaw)"/>
+            
+        <!-- Load the joint ctrlrs -->
+        <node name="contoller_spawner" pkg="contoller_manager" type="spawner" args="$(find little_pig_control)/config/basic_geometry_pig_joint_ctrlr_params.yaml"/>
+
+        <!-- Use the little_ackermann_controller to steer and ctrl velocity -->
+        <node name="little_ackerman_controller" pkg="little_pig_control" type="little_ackerman_controller">
+            <param name="cmd_timeout" value="$(arg cmd_timeout)"/>
+            <rosparam file="$(find litte_pig_control)/config/little_pig_ackermann_ctrlr_params.yaml" command="load" />
+        </node>
+    </group>
 
 </launch>

@@ -10,6 +10,9 @@ include_directories(${catkin_INCLUDE_DIRS})
 
 catkin_package()
 
+catkin_install_python(PROGRAMS src/little_ackerman_controller
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
 install(DIRECTORY config
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
@@ -21,4 +24,3 @@ install(DIRECTORY src
 
 add_executable(sender src/sender-example.cpp)
 target_link_libraries(sender ${catkin_LIBRARIES})
-add_dependencies(sender little_pig_control_generate_messages_cpp)

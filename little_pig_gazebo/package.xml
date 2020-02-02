@@ -19,6 +19,7 @@
   <exec_depend>rrbot_control</exec_depend>
   <exec_depend>rrbot_description</exec_depend>
   <exec_depend>xacro</exec_depend>
+  <exec_depend>little_pig_control</exec_depend>
 
   <export>
   </export>
