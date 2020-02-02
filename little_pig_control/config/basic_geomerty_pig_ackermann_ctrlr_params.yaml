@@ -1,0 +1,26 @@
+# Basic Geometry Pig Ackermann Controller Params
+# 
+# - Proudly Hand Coded by:
+# - Clayton "Coach" Allen
+# 
+# - February 2, 2020
+# 
+# The controllers are as described in:
+# - basic_geometry_pig_joint_ctrlr_params.yaml
+# - basic_geometry_pig.urdf.xacro
+# 
+# Still to be determined:
+# - Do we need to include the rear axle components in order for TF to properly work?
+# 
+
+front_left_wheel:
+  steering_link_name: left_ackerman_link
+  steering_controller_name: left_steering_position_ctrl
+  axle_controller_name: front_left_wheel_velocity_ctrl
+  diameter: 0.605
+
+front_right_wheel:
+  steering_link_name: right_ackerman_link
+  steering_controller_name: right_steering_position_ctrl
+  axle_controller_name: front_right_wheel_velocity_ctrl
+  diameter: 0.605

@@ -1,0 +1,52 @@
+# Basic Geometry Pig Joint Controller Params
+# 
+# - Proudly Hand Coded by:
+# - Clayton "Coach" Allen
+# 
+# - February 2, 2020
+# 
+# The controllers are as described in:
+# - basic_geometry_pig.urdf.xacro
+# 
+# Still to be determined:
+# - Do we need to include the rear axle components in order for TF to properly work?
+# - Do we need to convert Velocity to Effort in order for Ackermann to work properly?
+# - PID adjustments
+# 
+
+joint_state_ctrlr:
+  type: joint_state_ctrlr/JointStateController
+  publish_rate: 50
+
+# Steering angle controllers
+
+# Left steering link
+left_steering_postion_ctrl:
+  type: effort_controllers/JointPositionController
+  joint: base_link_left_ackerman_link
+  # These PIDs might need to be adjusted
+  pid: { p: 1000.0, i: 0.01, d: 10.0 }
+
+# Right steering link
+right_steering_postion_ctrl:
+  type: effort_controllers/JointPositionController
+  joint: base_link_right_ackerman_link
+  # These PIDs might need to be adjusted
+  pid: { p: 1000.0, i: 0.01, d: 10.0 }
+
+# Axle velocity controllers
+# - This may need to change to Effort in lieu of Velocity
+
+# Front left wheel
+front_left_wheel_velocity_ctrl:
+  type: velocity_controllers/JointVelocityController
+  joint: left_ackerman_link_front_left_wheel
+  # These PIDs might need to be adjusted
+  pid: { p: 10000.0, i: 0.01, d: 10.0 }
+
+# Front right wheel
+front_right_wheel_velocity_ctrl:
+  type: velocity_controllers/JointVelocityController
+  joint: right_ackerman_link_front_right_wheel
+  # These PIDs might need to be adjusted
+  pid: { p: 10000.0, i: 0.01, d: 10.0 }
